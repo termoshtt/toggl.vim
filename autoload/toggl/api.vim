@@ -21,25 +21,55 @@ let s:settings = {
       \ 'authMethod' : "basic",
       \ }
 
-function! s:call_api(rest, method) abort
-  let url = g:toggl_url_base . a:rest
-  let result = s:http.request({
-        \ 'url' : url,
-        \ 'method' : a:method,
-        \ 'username' : g:toggl_api_token,
-        \ 'password' : 'api_token',
-        \ 'client' : ["curl"],
-        \ 'authMethod' : "basic",
-        \ })
+function! s:call_api(setting) abort
+  let result = s:http.request(a:setting)
+  if result.success == 0
+    throw result.statusText
+  endif
   return s:json.decode(result.content)
 endfunction
 
+function! s:get(rest) abort
+  let url = g:toggl_url_base . a:rest
+  let l:setting = deepcopy(s:settings)
+  let l:setting.url = url
+  let l:setting.method = "GET"
+  return s:call_api(l:setting)
+endfunction
+
+function! s:put(rest) abort
+  let url = g:toggl_url_base . a:rest
+  let l:setting = deepcopy(s:settings)
+  let l:setting.url = url
+  let l:setting.method = "PUT"
+  return s:call_api(l:setting)
+endfunction
+
+function! s:post(rest, data) abort
+  let url = g:toggl_url_base . a:rest
+  let l:setting = deepcopy(s:settings)
+  let l:setting.url = url
+  let l:setting.method = "POST"
+  let l:setting.data = s:json.encode(a:data)
+  let l:setting.contentType = "application/json"
+  return s:call_api(l:setting)
+endfunction
+
+function! toggl#api#start_entry(description, pid, tags) abort
+  return s:post("time_entries/start", {'time_entry': {
+        \ 'description': a:description,
+        \ 'pid': a:pid,
+        \ 'tags': a:tags,
+        \ 'created_with': "toggl.vim",
+        \ }})
+endfunction
+
 function! toggl#api#get_running_entry() abort
-  return s:call_api("time_entries/current", "GET").data
+  return s:get("time_entries/current")
 endfunction
 
 function! toggl#api#stop_entry(time_entry_id) abort
-  return s:call_api("time_entries/" . a:time_entry_id . "/stop", "PUT")
+  return s:put("time_entries/" . a:time_entry_id . "/stop")
 endfunction
 
 let &cpo = s:save_cpo
