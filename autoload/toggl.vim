@@ -6,7 +6,8 @@ function! toggl#start(taskname) abort
 endfunction
 
 function! toggl#stop() abort
-  echoerr "Not implemented"
+  let now = toggl#api#get_running_entry()
+  call toggl#api#stop_entry(now.id)
 endfunction
 
 function! toggl#list() abort
