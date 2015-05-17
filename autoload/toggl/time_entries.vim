@@ -14,11 +14,11 @@ function! toggl#time_entries#start(description, pid, tags) abort
         \ 'pid': a:pid,
         \ 'tags': a:tags,
         \ 'created_with': "toggl.vim",
-        \ }})
+        \ }}).data
 endfunction
 
 function! toggl#time_entries#get_running() abort
-  return toggl#auth#get("time_entries/current")
+  return toggl#auth#get("time_entries/current").data
 endfunction
 
 function! toggl#time_entries#stop(time_entry_id) abort
