@@ -21,7 +21,10 @@ function! toggl#stop() abort
 endfunction
 
 function! toggl#list() abort
-  echoerr "Not implemented"
+  let now = vimproc#system('date +"%FT%T%:z"')[:-2]
+  let week_ago = vimproc#system('date +"%FT%T%:z" -d "now 1 week ago"')[:-2]
+  let entries = toggl#time_entries#range(week_ago, now)
+  return entries
 endfunction
 
 let &cpo = s:save_cpo

@@ -18,11 +18,18 @@ function! toggl#time_entries#start(description, pid, tags) abort
 endfunction
 
 function! toggl#time_entries#get_running() abort
-  return toggl#auth#get("time_entries/current").data
+  return toggl#auth#get("time_entries/current", {}).data
 endfunction
 
 function! toggl#time_entries#stop(time_entry_id) abort
   return toggl#auth#put("time_entries/" . a:time_entry_id . "/stop")
+endfunction
+
+function! toggl#time_entries#range(start, end) abort
+  return toggl#auth#get("time_entries", {
+        \ 'start_date': a:start,
+        \ 'end_date'  : a:end
+        \ })
 endfunction
 
 let &cpo = s:save_cpo

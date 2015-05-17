@@ -29,11 +29,12 @@ function! s:call_api(setting) abort
   return s:json.decode(result.content)
 endfunction
 
-function! toggl#auth#get(rest) abort
+function! toggl#auth#get(rest, param) abort
   let url = s:toggl_url_base . a:rest
   let l:setting = deepcopy(s:settings)
   let l:setting.url = url
   let l:setting.method = "GET"
+  let l:setting.param = a:param
   return s:call_api(l:setting)
 endfunction
 
