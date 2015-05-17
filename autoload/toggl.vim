@@ -27,5 +27,10 @@ function! toggl#list() abort
   return entries
 endfunction
 
+function! toggl#projects() abort
+  let wid = toggl#workspaces#get()[0].id
+  return toggl#workspaces#projects(wid)
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
