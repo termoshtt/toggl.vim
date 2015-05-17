@@ -21,10 +21,19 @@ function! toggl#stop() abort
 endfunction
 
 function! toggl#list() abort
-  let now = vimproc#system('date +"%FT%T%:z"')[:-2]
+  let now = vimproc#system('date +"%FT%T%:z"')[:-2]  " remove last '\n'
   let week_ago = vimproc#system('date +"%FT%T%:z" -d "now 1 week ago"')[:-2]
-  let entries = toggl#time_entries#range(week_ago, now)
-  return entries
+  return toggl#time_entries#range(week_ago, now)
+endfunction
+
+function! toggl#projects() abort
+  let wid = toggl#workspaces#get()[0].id
+  return toggl#workspaces#projects(wid)
+endfunction
+
+function! toggl#tags() abort
+  let wid = toggl#workspaces#get()[0].id
+  return toggl#workspaces#tags(wid)
 endfunction
 
 let &cpo = s:save_cpo
