@@ -5,16 +5,17 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:kind = {
-      \ 'name' : 'task',
+let s:kind_task = {
+      \ 'name' : 'toggl/task',
       \ 'action_table' : {},
       \ 'default_action' : 'restart',
       \}
 
-let s:kind.action_table.restart = {
+let s:kind_task.action_table.restart = {
       \ 'description': "restart selected task"
       \ }
-function! s:kind.action_table.restart.func(candidate) abort
+
+function! s:kind_task.action_table.restart.func(candidate) abort
   let task = a:candidate.source__task
   if has_key(task, "pid")
     let pid = task.pid
@@ -30,8 +31,24 @@ function! s:kind.action_table.restart.func(candidate) abort
   echo 'Start task: ' . res.description
 endfunction
 
-function! unite#kinds#task#define() abort
-  return s:kind
+
+let s:kind_project = {
+      \ 'name': 'toggl/project',
+      \ 'action_table': {},
+      \ 'default_action': 'set_current',
+      \ }
+
+let s:kind_project.action_table.set_current = {
+      \ 'description': 'set the project of the current task'
+      \ }
+
+function! s:kind_project.action_table.set_current.func(candidate) abort
+  let project = a:candidate.source__project
+  echo project
+endfunction
+
+function! unite#kinds#toggl#define() abort
+  return [s:kind_task, s:kind_project]
 endfunction
 
 let &cpo = s:save_cpo

@@ -5,21 +5,35 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:source = {
-      \ 'name': 'toggl'
+let s:src_task = {
+      \ 'name': 'toggl/task'
       \ }
 
-function! s:source.gather_candidates(args,context) abort
+function! s:src_task.gather_candidates(args,context) abort
   return map(reverse(toggl#list()), '{
         \ "word": v:val["description"],
-        \ "source": "toggl",
-        \ "kind": "task",
+        \ "source": "toggl/task",
+        \ "kind": "toggl/task",
         \ "source__task": v:val,
         \ }')
 endfunction
 
+
+let s:src_project = {
+      \ 'name': 'toggl/project'
+      \ }
+
+function! s:src_project.gather_candidates(args, context) abort
+  return map(reverse(toggl#projects()), '{
+        \ "word": v:val["name"],
+        \ "source": "toggl/project",
+        \ "kind": "toggl/project",
+        \ "source__project": v:val,
+        \ }')
+endfunction
+
 function! unite#sources#toggl#define() 
-  return s:source
+  return [s:src_task, s:src_project]
 endfunction 
 
 let &cpo = s:save_cpo
