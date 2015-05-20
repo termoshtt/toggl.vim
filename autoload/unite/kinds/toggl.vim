@@ -44,7 +44,7 @@ let s:kind_project.action_table.set_current = {
 
 function! s:kind_project.action_table.set_current.func(candidate) abort
   let project = a:candidate.source__project
-  echo project
+  call toggl#update_current({'pid': project.id})
 endfunction
 
 function! unite#kinds#toggl#define() abort

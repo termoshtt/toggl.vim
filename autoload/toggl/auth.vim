@@ -23,6 +23,7 @@ let s:settings = {
 
 function! s:call_api(setting) abort
   let result = s:http.request(a:setting)
+  let g:toggl_debug_last_result = result
   if result.success == 0
     throw result.statusText
   endif
@@ -38,11 +39,13 @@ function! toggl#auth#get(rest, param) abort
   return s:call_api(l:setting)
 endfunction
 
-function! toggl#auth#put(rest) abort
+function! toggl#auth#put(rest, data) abort
   let url = s:toggl_url_base . a:rest
   let l:setting = deepcopy(s:settings)
   let l:setting.url = url
   let l:setting.method = "PUT"
+  let l:setting.data = s:json.encode(a:data)
+  let l:setting.contentType = "application/json"
   return s:call_api(l:setting)
 endfunction
 

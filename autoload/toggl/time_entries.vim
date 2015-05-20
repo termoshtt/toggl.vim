@@ -22,7 +22,7 @@ function! toggl#time_entries#get_running() abort
 endfunction
 
 function! toggl#time_entries#stop(time_entry_id) abort
-  return toggl#auth#put("time_entries/" . a:time_entry_id . "/stop")
+  return toggl#auth#put("time_entries/" . a:time_entry_id . "/stop", {})
 endfunction
 
 function! toggl#time_entries#range(start, end) abort
@@ -30,6 +30,11 @@ function! toggl#time_entries#range(start, end) abort
         \ 'start_date': a:start,
         \ 'end_date'  : a:end
         \ })
+endfunction
+
+function! toggl#time_entries#update(time_entry_id, update_data) abort
+  let data = {'time_entry': a:update_data}
+  return toggl#auth#put("time_entries/" . a:time_entry_id, data)
 endfunction
 
 let &cpo = s:save_cpo
