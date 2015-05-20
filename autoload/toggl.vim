@@ -36,5 +36,14 @@ function! toggl#tags() abort
   return toggl#workspaces#tags(wid)
 endfunction
 
+function! toggl#update_current(data) abort
+  let now = toggl#time_entries#get_running()
+  if now is 0
+    throw "No task is running"
+    return
+  endif
+  return toggl#time_entries#update(now.id, a:data)
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
