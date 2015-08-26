@@ -20,9 +20,15 @@ function! toggl#stop() abort
   echo 'Stop task: ' . now.description
 endfunction
 
+function! s:getftime_of_days_ago(days) abort
+  let t = localtime() - a:days * 24 * 60 * 60
+  let pre = strftime("%FT%T%z", t)
+  return pre[:-3] . ':' . pre[-2:]
+endfunction
+
 function! toggl#list() abort
-  let now = vimproc#system('date +"%FT%T%:z"')[:-2]  " remove last '\n'
-  let week_ago = vimproc#system('date +"%FT%T%:z" -d "now 1 week ago"')[:-2]
+  let now = s:getftime_of_days_ago(0)
+  let week_ago = s:getftime_of_days_ago(7)
   return toggl#time_entries#range(week_ago, now)
 endfunction
 
