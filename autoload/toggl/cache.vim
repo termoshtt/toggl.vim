@@ -11,6 +11,14 @@ let s:json = s:V.import("Web.JSON")
 let s:task_json = g:toggl#cache_directory . "/task.json"
 let s:project_json = g:toggl#cache_directory . "/project.json"
 
+if !exists('g:toggl#cache_directory')
+  let g:toggl#cache_directory = expand("~/.cache/toggl.vim")
+endif
+
+if !isdirectory(g:toggl#cache_directory)
+  call mkdir(g:toggl#cache_directory)
+endif
+
 function! s:save(obj, filename) abort
   let encoded = s:json.encode(a:obj)
   call writefile([encoded, ], a:filename)
