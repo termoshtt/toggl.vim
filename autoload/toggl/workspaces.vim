@@ -9,15 +9,15 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! toggl#workspaces#get() abort
-  return toggl#auth#get("workspaces", {})
+  return toggl#sync#get("workspaces", {})
 endfunction
 
 function! toggl#workspaces#projects(workspace_id) abort
-  return toggl#auth#get("workspaces/" . a:workspace_id . "/projects", {})
+  return toggl#sync#get("workspaces/" . a:workspace_id . "/projects", {})
 endfunction
 
 function! toggl#workspaces#tags(workspace_id) abort
-  return toggl#auth#get("workspaces/" . a:workspace_id . "/tags", {})
+  return toggl#sync#get("workspaces/" . a:workspace_id . "/tags", {})
 endfunction
 
 let &cpo = s:save_cpo

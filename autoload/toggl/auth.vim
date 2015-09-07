@@ -1,6 +1,5 @@
 " FILE: toggl/auth.vim
 " AUTHOR: Toshiki Teramura <toshiki.teramura@gmail.com>
-" LICENCE: MIT
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -8,7 +7,6 @@ set cpo&vim
 let s:V = vital#of("vital")
 let s:json = s:V.import("Web.JSON")
 
-let s:toggl_url_base = "https://www.toggl.com/api/v8/"
 if !exists("g:toggl_api_token")
   echoerr "API token for Toggl is not set"
 endif
@@ -20,42 +18,38 @@ let s:settings = {
       \ 'authMethod' : "basic",
       \ }
 
-function! s:call_api(setting) abort
-  let result = curl#request(a:setting.url, a:setting)
-  let g:toggl_debug_last_result = result
-  if result.success == 0
-    throw result.statusText
-  endif
-  return s:json.decode(result.content)
+function! toggl#auth#get_url(rest) abort
+  let s:toggl_url_base = "https://www.toggl.com/api/v8/"
+  return s:toggl_url_base . a:rest
 endfunction
 
-function! toggl#auth#get(rest, param) abort
-  let url = s:toggl_url_base . a:rest
-  let l:setting = deepcopy(s:settings)
-  let l:setting.url = url
-  let l:setting.method = "GET"
-  let l:setting.param = a:param
-  return s:call_api(l:setting)
+function! toggl#auth#setting_get(param) abort
+  let setting = deepcopy(s:settings)
+  call extend(setting, {
+        \ 'method': 'GET,',
+        \ 'param': a:param,
+        \ })
+  return setting
 endfunction
 
-function! toggl#auth#put(rest, data) abort
-  let url = s:toggl_url_base . a:rest
-  let l:setting = deepcopy(s:settings)
-  let l:setting.url = url
-  let l:setting.method = "PUT"
-  let l:setting.data = s:json.encode(a:data)
-  let l:setting.contentType = "application/json"
-  return s:call_api(l:setting)
+function! toggl#auth#setting_put(data) abort
+  let setting = deepcopy(s:settings)
+  call extend(setting, {
+        \ 'method': 'PUT',
+        \ 'data': s:json.encode(a:data),
+        \ 'contentType': 'application/json',
+        \ })
+  return setting
 endfunction
 
-function! toggl#auth#post(rest, data) abort
-  let url = s:toggl_url_base . a:rest
-  let l:setting = deepcopy(s:settings)
-  let l:setting.url = url
-  let l:setting.method = "POST"
-  let l:setting.data = s:json.encode(a:data)
-  let l:setting.contentType = "application/json"
-  return s:call_api(l:setting)
+function! toggl#auth#setting_post(data) abort
+  let setting = deepcopy(s:settings)
+  call extend(setting, {
+        \ 'method': 'POST',
+        \ 'data': s:json.encode(a:data),
+        \ 'contentType': 'application/json',
+        \ })
+  return setting
 endfunction
 
 let &cpo = s:save_cpo
