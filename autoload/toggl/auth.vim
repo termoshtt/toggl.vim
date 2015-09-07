@@ -6,7 +6,6 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let s:V = vital#of("vital")
-let s:http = s:V.import("Web.HTTP")
 let s:json = s:V.import("Web.JSON")
 
 let s:toggl_url_base = "https://www.toggl.com/api/v8/"
@@ -22,7 +21,7 @@ let s:settings = {
       \ }
 
 function! s:call_api(setting) abort
-  let result = s:http.request(a:setting)
+  let result = curl#request(a:setting.url, a:setting)
   let g:toggl_debug_last_result = result
   if result.success == 0
     throw result.statusText
