@@ -14,5 +14,14 @@ function! toggl#util#parse_response(response) abort
   return s:json.decode(a:response.content)
 endfunction
 
+function! toggl#util#wrapped_callback(callback) abort
+  let closure = {'_callback': a:callback}
+  function! closure.callback(response) abort
+    let contents = toggl#util#parse_response(a:response)
+    return self._callback(contents)
+  endfunction
+  return closure
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo

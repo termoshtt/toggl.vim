@@ -8,13 +8,30 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! toggl#time_entries#start(description, pid, tags) abort
-  return toggl#sync#post("time_entries/start", {'time_entry': {
+function! s:wrapper(callback) abort
+  let closure = {'_callback': a:callback}
+  function! closure.callback(contents) dict
+    return self._callback(a:contents.data)
+  endfunction
+  return closure
+endfunction
+
+function! toggl#time_entries#start(description, pid, tags, ...) abort
+  let rest = 'time_entries/start'
+  let opt = {'time_entry': {
         \ 'description': a:description,
         \ 'pid': a:pid,
         \ 'tags': a:tags,
         \ 'created_with': "toggl.vim",
-        \ }}).data
+        \ }}
+  if len(a:000) > 0 && type(a:1) == 2
+    " async
+    let c = s:wrapper(a:1)
+    call toggl#async#post(res, opt, c.callback)
+  else
+    " sync
+    return toggl#sync#post(rest, opt).data
+  endif
 endfunction
 
 function! toggl#time_entries#get_running() abort
