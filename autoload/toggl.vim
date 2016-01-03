@@ -62,6 +62,13 @@ function! toggl#projects() abort
 endfunction
 
 function! s:get_pid(project_name) abort
+  let pl = toggl#projects()
+  for p in pl
+    if p.name == a:project_name
+      return p.id
+    endif
+  endfor
+  echo 'Project "' . a:project_name . '" does not found.'
   return 0
 endfunction
 
