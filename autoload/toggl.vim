@@ -5,8 +5,32 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! toggl#start(taskname) abort
-  let res = toggl#time_entries#start(a:taskname, 0, ["toggl.vim"])
+function! s:parse_args(args) abort
+  let result = {
+        \ "words": split(a:args),
+        \ "tags": [],
+        \ "args": [],
+        \ }
+  for s in result.words 
+    if s[0] == "+"
+      let result.project = s[1:]
+    elseif s[0] == "@"
+      call add(result.tags, s[1:])
+    else
+      call add(result.args, s)
+    endif
+  endfor
+  return result
+endfunction
+
+function! toggl#start(args) abort
+  let args = s:parse_args(a:args)
+  if has_key(args, "project")
+    let pid = s:get_pid(args.project)
+  else
+    let pid = 0
+  endif
+  let res = toggl#time_entries#start(join(args.args, " "), pid, args.tags)
   echo 'Start task: ' . res.description
 endfunction
 
@@ -35,6 +59,17 @@ endfunction
 function! toggl#projects() abort
   let wid = toggl#workspaces#get()[0].id
   return toggl#workspaces#projects(wid)
+endfunction
+
+function! s:get_pid(project_name) abort
+  let pl = toggl#projects()
+  for p in pl
+    if p.name == a:project_name
+      return p.id
+    endif
+  endfor
+  echo 'Project "' . a:project_name . '" does not found.'
+  return 0
 endfunction
 
 function! toggl#tags() abort
