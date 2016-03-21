@@ -57,7 +57,11 @@ function! toggl#list() abort
 endfunction
 
 function! toggl#projects() abort
-  let wid = toggl#workspaces#get()[0].id
+  if !exists("g:toggl_workspace_id")
+    let wid = toggl#workspaces#get()[0].id
+  else
+    let wid = g:toggl_workspace_id
+  endif
   return toggl#workspaces#projects(wid)
 endfunction
 
@@ -73,7 +77,11 @@ function! s:get_pid(project_name) abort
 endfunction
 
 function! toggl#tags() abort
-  let wid = toggl#workspaces#get()[0].id
+  if !exists("g:toggl_workspace_id")
+    let wid = toggl#workspaces#get()[0].id
+  else
+    let wid = g:toggl_workspace_id
+  endif
   return toggl#workspaces#tags(wid)
 endfunction
 
