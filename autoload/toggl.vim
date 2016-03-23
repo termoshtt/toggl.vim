@@ -56,9 +56,12 @@ function! toggl#list() abort
   return toggl#time_entries#range(week_ago, now)
 endfunction
 
-function! toggl#projects() abort
-  let wid = toggl#workspaces#get()[0].id
-  return toggl#workspaces#projects(wid)
+function! s:get_wid() abort
+  if !exists("g:toggl_workspace_id")
+    return toggl#workspaces#get()[0].id
+  else
+    return g:toggl_workspace_id
+  endif
 endfunction
 
 function! s:get_pid(project_name) abort
@@ -72,8 +75,13 @@ function! s:get_pid(project_name) abort
   return 0
 endfunction
 
+function! toggl#projects() abort
+  let wid = s:get_wid()
+  return toggl#workspaces#projects(wid)
+endfunction
+
 function! toggl#tags() abort
-  let wid = toggl#workspaces#get()[0].id
+  let wid = s:get_wid()
   return toggl#workspaces#tags(wid)
 endfunction
 
