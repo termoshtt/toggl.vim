@@ -3,6 +3,12 @@ toggl.vim
 
 Toggl client for vimscript and vim.
 
+Dependences
+-----------
+
+- vital.vim
+- unite.vim (optional)
+
 Usage
 -----
 Set your [API token](https://github.com/toggl/toggl_api_docs#api-token)
